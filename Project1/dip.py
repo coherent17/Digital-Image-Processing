@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 from PIL import Image
+import matplotlib.pyplot as plt
 
 def save_picture(filename, source):
   image = Image.fromarray(np.uint8(source))
@@ -13,11 +14,18 @@ def constrast_stretching(source):
   source = (source - min) / (max - min) * (L - 1)
   return source.astype(np.uint8)
 
+def histogram(source, filename):
+  plt.hist(source.ravel(),256,[0,255])
+  plt.xlim([0,255])
+  plt.savefig(filename)
+  plt.show()
+
 def DIP(filename, gamma):
 
 	#original
 	original = cv2.imread(filename + '.tif', cv2.IMREAD_GRAYSCALE)
 	save_picture(filename+'_(a).jpg', constrast_stretching(original))
+	histogram(constrast_stretching(original), filename + '_original_histgram.jpg')
 
 	#Laplacian
 	kernel = np.array([[-1, -1, -1],
@@ -62,6 +70,7 @@ def DIP(filename, gamma):
 	#power law
 	h = np.array(255*(g / 255) ** gamma)
 	save_picture(filename+'_(h).jpg', constrast_stretching(h))
+	histogram(constrast_stretching(h), filename + '_output_histgram.jpg')
 
 if __name__ == "__main__": 
 	DIP('kid blurred-noisy', gamma = 1.4)
