@@ -2,6 +2,7 @@ import numpy as np
 import cv2
 from PIL import Image
 import matplotlib.pyplot as plt
+np.set_printoptions(threshold = np.inf)
 
 def save_picture(filename, source):
   image = Image.fromarray(np.uint8(source))
@@ -20,11 +21,22 @@ def histogram(source, filename):
   plt.savefig(filename)
   plt.show()
 
+def cal_probability(source):
+	MN = source.shape[0] * source.shape[1]
+	ret = []
+	source = source.flatten().tolist()
+	for i in range(0, 256):
+		ret.append(source.count(i)/MN)
+	
+	for i in range(0, 256):
+		print(ret[i])
+
 def DIP(filename, gamma):
 
 	#original
 	original = cv2.imread(filename + '.tif', cv2.IMREAD_GRAYSCALE)
 	save_picture(filename+'_(a).jpg', constrast_stretching(original))
+	print(cal_probability(constrast_stretching(original)))
 	histogram(constrast_stretching(original), filename + '_original_histgram.jpg')
 
 	#Laplacian
@@ -70,6 +82,7 @@ def DIP(filename, gamma):
 	#power law
 	h = np.array(255*(g / 255) ** gamma)
 	save_picture(filename+'_(h).jpg', constrast_stretching(h))
+	print(cal_probability(constrast_stretching(h)))
 	histogram(constrast_stretching(h), filename + '_output_histgram.jpg')
 
 if __name__ == "__main__": 
