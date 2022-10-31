@@ -1,14 +1,27 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
-import pandas as pd
+from PIL import Image
 
 #helper function to plot the image
 def plot(img):
 	plt.figure(figsize = (8, 8))
 	plt.imshow(img, cmap = 'gray')
-	plt.axis('on')
+	plt.axis('off')
 	plt.show()
+
+def constrast_stretching(source):
+	min = np.min(source)
+	max = np.max(source)
+	L = 256
+	source = (source - min) / (max - min) * (L - 1)
+	return source.astype(np.uint8)
+ 
+#helper function to save the figure
+def save_picture(filename, source):
+	source = constrast_stretching(source)
+	image = Image.fromarray(np.uint8(source))
+	image.save('./'+filename, dpi=(150, 150))
 
 def top25(Fshift):
     M, N = Fshift.shape
@@ -31,9 +44,8 @@ def DIP(name):
 	#for question (b)
 	F = np.fft.fft2(f)
 	Fshift = np.fft.fftshift(F)
-	plot(np.log1p(np.abs(Fshift)))
-	top_25_coordinate = top25(Fshift)
-
+	#plot(np.log1p(np.abs(Fshift)))
+	save_picture(name+'_DFT.jpg', np.log1p(np.abs(Fshift)))
 
 	#padding to avoid wraparound error
 	f_pad = cv2.copyMakeBorder(f, 0, M, 0, N, cv2.BORDER_CONSTANT , value = 0)
@@ -49,10 +61,12 @@ def DIP(name):
 			D_2 = (u-M)**2 + (v-N)**2
 			LPF[u,v] = np.exp(-1*D_2/(2*D0*D0))
 	plot(LPF)
+	save_picture(name+'_LPF_Magnitude_Response.jpg', LPF)
 
 	#construct Gaussian high pass filter
 	HPF = 1 - LPF
 	plot(HPF)
+	save_picture(name+'_HPF_Magnitude_Response.jpg', HPF)
 	
 
 	#output of LPF
@@ -60,14 +74,17 @@ def DIP(name):
 	G_LPF = np.fft.ifftshift(G_LPF_shift)
 	g_LPF = np.real(np.fft.ifft2(G_LPF))[:M, :N]
 	plot(g_LPF)
+	save_picture(name+'_LPF_Output.jpg', g_LPF)
 
 	#output of HPF
 	G_HPF_shift = F_pad_shift * HPF
 	G_HPF = np.fft.ifftshift(G_HPF_shift)
 	g_HPF = np.real(np.fft.ifft2(G_HPF))[:M, :N]
 	plot(g_HPF)
- 
- 
+	save_picture(name+'_HPF_Output.jpg', g_HPF)
+	
+	#problem(e)
+	top_25_coordinate = top25(Fshift)
 	log(top_25_coordinate, Fshift)
 
 if __name__ == "__main__":
