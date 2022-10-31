@@ -29,11 +29,14 @@ def top25(Fshift):
     top_25_coordinate = (coordinate[0][-25:])[::-1]
     return top_25_coordinate
 
-def log(top_25_coordinate, F_shift):
-    for i in range(25):
-        u = top_25_coordinate[i][0]
-        v = top_25_coordinate[i][1]
-        print('(u, v) = (%d %d) with abs(DFT) = %f' %(u, v, F_shift[u,v]))
+def log(name, top_25_coordinate, F_shift):
+	f = open(name+'_top25.txt', 'w')
+	for i in range(25):
+		u = top_25_coordinate[i][0]
+		v = top_25_coordinate[i][1]
+		f.write('(u, v) = (%d %d) with abs(DFT) = %f\n' %(u, v, F_shift[u,v]))
+		#print('(u, v) = (%d %d) with abs(DFT) = %f' %(u, v, F_shift[u,v]))
+	f.close()
 
 def DIP(name):
 
@@ -85,7 +88,7 @@ def DIP(name):
 	
 	#problem(e)
 	top_25_coordinate = top25(Fshift)
-	log(top_25_coordinate, Fshift)
+	log(name, top_25_coordinate, Fshift)
 
 if __name__ == "__main__":
     DIP('kid')
