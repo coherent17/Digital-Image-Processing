@@ -2,7 +2,7 @@ clc;
 clear;
 close all;
 
-filename = 'fruit';
+filename = 'kid';
 f = imread([filename,'.tif']);
 [M, N] = size(f);
 
@@ -43,27 +43,27 @@ Re_g_HPF = real(g_HPF(1:M,1:N));
 figure(1)
 imshow(mat2gray(log10(1+ abs(F_shift))));
 img1 = getimage(gcf);
-imwrite(img1,[filename,'_(600x600_DFT).tiff'], 'tiff', 'Resolution', 150)
+imwrite(img1,['result/',filename,'_(600x600_DFT).tiff'], 'tiff', 'Resolution', 150)
 
 figure(2)
 imshow(LPF);
 img2 = getimage(gcf);
-imwrite(img2,[filename,'_(1200x1200_LPF).tiff'], 'tiff', 'Resolution', 150)
+imwrite(img2,['result/',filename,'_(1200x1200_LPF).tiff'], 'tiff', 'Resolution', 150)
 
 figure(3)
 imshow(HPF);
 img3 = getimage(gcf);
-imwrite(img3,[filename,'_(1200x1200_HPF).tiff'], 'tiff', 'Resolution', 150)
+imwrite(img3,['result/',filename,'_(1200x1200_HPF).tiff'], 'tiff', 'Resolution', 150)
 
 figure(4)
 imshow(mat2gray(Re_g_LPF));
 img4 = getimage(gcf);
-imwrite(img4,[filename,'_(600x600_LPF_output).tiff'], 'tiff', 'Resolution', 150)
+imwrite(img4,['result/',filename,'_(600x600_LPF_output).tiff'], 'tiff', 'Resolution', 150)
 
 figure(5)
 imshow(mat2gray(Re_g_HPF));
 img5 = getimage(gcf);
-imwrite(img5,[filename,'_(600x600_HPF_output).tiff'], 'tiff', 'Resolution', 150)
+imwrite(img5,['result/',filename,'_(600x600_HPF_output).tiff'], 'tiff', 'Resolution', 150)
 
 %get top25 abs(Fshift)
 Abs_F_shift = abs(F_shift);
@@ -80,6 +80,7 @@ while idx < 25
     for j = 0:length - 1
         u(idx+j,1) = row(j+1,1) - 1;
         v(idx+j,1) = col(j+1,1) - 1;
+        max_abs(idx+j,1) = max_value;
         Abs_F_shift(row(j+1,1),col(j+1,1)) = -inf;
     end
     idx = idx + length;
