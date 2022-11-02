@@ -40,6 +40,27 @@ G_HPF = ifftshift(double(G_HPF_shift));
 g_HPF = ifft2(double(G_HPF));
 Re_g_HPF = real(g_HPF(1:M,1:N));
 
+%get top25 abs(Fshift)
+Abs_F_shift = abs(F_shift);
+max_abs = zeros(25,1);
+u = zeros(25,1);
+v = zeros(25,1);
+idx = 1;
+
+while idx < 25
+    sort_abs = sort(Abs_F_shift(:));
+    max_value = max(sort_abs);
+    [row,col] = find(Abs_F_shift == max_value);
+    [length, a] = size(row);
+    for j = 0:length - 1
+        u(idx+j,1) = row(j+1,1) - 1;
+        v(idx+j,1) = col(j+1,1) - 1;
+        max_abs(idx+j,1) = max_value;
+        Abs_F_shift(row(j+1,1),col(j+1,1)) = -inf;
+    end
+    idx = idx + length;
+end
+
 figure(1)
 imshow(mat2gray(log10(1+ abs(F_shift))));
 img1 = getimage(gcf);
@@ -64,24 +85,3 @@ figure(5)
 imshow(mat2gray(Re_g_HPF));
 img5 = getimage(gcf);
 imwrite(img5,['result/',filename,'_(600x600_HPF_output).tiff'], 'tiff', 'Resolution', 150)
-
-%get top25 abs(Fshift)
-Abs_F_shift = abs(F_shift);
-max_abs = zeros(25,1);
-u = zeros(25,1);
-v = zeros(25,1);
-idx = 1;
-
-while idx < 25
-    sort_abs = sort(Abs_F_shift(:));
-    max_value = max(sort_abs);
-    [row,col] = find(Abs_F_shift == max_value);
-    [length, a] = size(row);
-    for j = 0:length - 1
-        u(idx+j,1) = row(j+1,1) - 1;
-        v(idx+j,1) = col(j+1,1) - 1;
-        max_abs(idx+j,1) = max_value;
-        Abs_F_shift(row(j+1,1),col(j+1,1)) = -inf;
-    end
-    idx = idx + length;
-end
