@@ -2,7 +2,7 @@ clc;
 clear;
 close all;
 
-filename = 'kid';
+filename = 'fruit';
 f = imread([filename,'.tif']);
 [M, N] = size(f);
 
@@ -42,12 +42,13 @@ Re_g_HPF = real(g_HPF(1:M,1:N));
 
 %get top25 abs(Fshift)
 Abs_F_shift = abs(F_shift);
+Abs_F_shift = Abs_F_shift(1:M,1:N/2);
 max_abs = zeros(25,1);
 u = zeros(25,1);
 v = zeros(25,1);
 idx = 1;
 
-while idx < 25
+while idx <= 25
     sort_abs = sort(Abs_F_shift(:));
     max_value = max(sort_abs);
     [row,col] = find(Abs_F_shift == max_value);
