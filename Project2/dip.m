@@ -2,7 +2,7 @@ clc;
 clear;
 close all;
 
-filename = 'fruit';
+filename = 'kid';
 f = imread([filename,'.tif']);
 [M, N] = size(f);
 
@@ -11,16 +11,24 @@ F = fft2(double(f));
 F_shift = fftshift(F);
 
 %pading to avoid wraparound error
-F_pad = fft2(double(f), 2*M, 2*N);
-F_pad_shift = fftshift(F_pad);
+f_pad = zeros(2*M, 2*N);
+f_pad(1:M, 1:N) = f;
+f_pad_shift = zeros(2*M, 2*N);
 
-%create Gaussian LPF and HPF
+for i = 1 : 2*M
+    for j = 1 : 2*N
+        f_pad_shift(i, j) = f_pad(i, j) * ((-1)^((i-1)+(j-1)));
+    end
+end
+F_pad_shift = fft2(double(f_pad_shift));
+
+%create Gaussian LPF and HPF (1200 x 1200 FILTER)
 LPF = zeros(2*M,2*N);
-D0 = 200;
+D0 = 200;                                                   %D0 = 200!!!!!!!!!!!!!!!!!!!!! not 100
 
 for u = 1:2*M
     for v = 1:2*N
-        D2 = (u-M)^2 + (v-N)^2;
+        D2 = (u-M)^2 + (v-N)^2;                             %center change to (M, N)
         LPF(u,v) = exp(-1*D2/(2*D0*D0)); 
     end
 end
@@ -29,15 +37,28 @@ HPF = 1 - LPF;
 
 %Image pass LPF
 G_LPF_shift = F_pad_shift .* LPF;
-G_LPF = ifftshift(double(G_LPF_shift));
-g_LPF = ifft2(double(G_LPF));
+g_LPF_shift = ifft2(double(G_LPF_shift));
+g_LPF = zeros(2*M, 2*N);
+for i = 1 : 2*M
+    for j = 1 : 2*N
+        g_LPF(i, j) = g_LPF_shift(i, j) * ((-1)^((i-1)+(j-1)));
+    end
+end
+
+
 Re_g_LPF = real(g_LPF(1:M,1:N));
 
 
 %Image pass HPF
 G_HPF_shift = F_pad_shift .* HPF;
-G_HPF = ifftshift(double(G_HPF_shift));
-g_HPF = ifft2(double(G_HPF));
+g_HPF_shift = ifft2(double(G_HPF_shift));
+g_HPF = zeros(2*M, 2*N);
+for i = 1 : 2*M
+    for j = 1 : 2*N
+        g_HPF(i, j) = g_HPF_shift(i, j) * ((-1)^((i-1)+(j-1)));
+    end
+end
+
 Re_g_HPF = real(g_HPF(1:M,1:N));
 
 %get top25 abs(Fshift)
@@ -78,11 +99,11 @@ img3 = getimage(gcf);
 imwrite(img3,['result/',filename,'_(1200x1200_HPF).tiff'], 'tiff', 'Resolution', 150)
 
 figure(4)
-imshow(mat2gray(Re_g_LPF));
+imshow(uint8(Re_g_LPF));
 img4 = getimage(gcf);
 imwrite(img4,['result/',filename,'_(600x600_LPF_output).tiff'], 'tiff', 'Resolution', 150)
 
 figure(5)
-imshow(mat2gray(Re_g_HPF));
+imshow(uint8(Re_g_HPF));
 img5 = getimage(gcf);
 imwrite(img5,['result/',filename,'_(600x600_HPF_output).tiff'], 'tiff', 'Resolution', 150)
