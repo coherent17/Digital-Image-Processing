@@ -29,77 +29,66 @@ denoise_image = zeros([M,N]);
 denoise_image(1:M,1:N) = image_pad(3:802,3:802);
 
 %Generate Gaussian LPF & Butterworth LPF:
-GLPF_100 = zeros(M,N);
-GLPF_150 = zeros(M,N);
-GLPF_200 = zeros(M,N);
-GLPF_250 = zeros(M,N);
 
-BLPF_100_3 = zeros(M,N);
-BLPF_150_3 = zeros(M,N);
-BLPF_200_3 = zeros(M,N);
-BLPF_250_3 = zeros(M,N);
+beta = 1;
+n = 6;
+ButterWorth_D0 = 180;
 
-for u = 1:M
-    for v = 1:N
-        D2 = (u-M/2)^2 + (v-N/2)^2;
+GLPF_100 = zeros(2*M,2*N);
+GLPF_150 = zeros(2*M,2*N);
+GLPF_200 = zeros(2*M,2*N);
+GLPF_250 = zeros(2*M,2*N);
+
+BLPF = zeros(M,N);
+
+for u = 1:2*M
+    for v = 1:2*N
+        D2 = (u-M)^2 + (v-N)^2;
         GLPF_100(u,v) = exp(-1*D2/(2*100*100)); 
         GLPF_150(u,v) = exp(-1*D2/(2*150*150)); 
         GLPF_200(u,v) = exp(-1*D2/(2*200*200)); 
         GLPF_250(u,v) = exp(-1*D2/(2*250*250)); 
-        BLPF_100_3(u,v) = 1/(1+0.6*(D2/(100*100))^2);
-        BLPF_150_3(u,v) = 1/(1+0.6*(D2/(150*150))^2);
-        BLPF_200_3(u,v) = 1/(1+0.6*(D2/(200*200))^2);
-        BLPF_250_3(u,v) = 1/(1+0.6*(D2/(250*250))^2);
+        BLPF(u,v) = 1/(1+beta*(D2/(ButterWorth_D0*ButterWorth_D0))^n);
     end
 end
 
 %image pass inverse filter
-threshold = 0.1;    %deal with divide by zero
-devonvolution_GLPF_100 = ifft2(ifftshift(fftshift(fft2(denoise_image))./(GLPF_100+threshold)));
-devonvolution_GLPF_150 = ifft2(ifftshift(fftshift(fft2(denoise_image))./(GLPF_150+threshold)));
-devonvolution_GLPF_200 = ifft2(ifftshift(fftshift(fft2(denoise_image))./(GLPF_200+threshold)));
-devonvolution_GLPF_250 = ifft2(ifftshift(fftshift(fft2(denoise_image))./(GLPF_250+threshold)));
+threshold = 1e-10;    %deal with divide by zero
+devonvolution_GLPF_100_ = real(ifft2(ifftshift(fftshift(fft2(denoise_image, 2*M, 2*N)).*BLPF./(GLPF_100+threshold))));
+devonvolution_GLPF_150_ = real(ifft2(ifftshift(fftshift(fft2(denoise_image, 2*M, 2*N)).*BLPF./(GLPF_150+threshold))));
+devonvolution_GLPF_200_ = real(ifft2(ifftshift(fftshift(fft2(denoise_image, 2*M, 2*N)).*BLPF./(GLPF_200+threshold))));
+devonvolution_GLPF_250_ = real(ifft2(ifftshift(fftshift(fft2(denoise_image, 2*M, 2*N)).*BLPF./(GLPF_250+threshold))));
 
-devonvolution_BLPF_100 = ifft2(ifftshift(fftshift(fft2(denoise_image))./(BLPF_100_3+threshold)));
-devonvolution_BLPF_150 = ifft2(ifftshift(fftshift(fft2(denoise_image))./(BLPF_150_3+threshold)));
-devonvolution_BLPF_200 = ifft2(ifftshift(fftshift(fft2(denoise_image))./(BLPF_200_3+threshold)));
-devonvolution_BLPF_250 = ifft2(ifftshift(fftshift(fft2(denoise_image))./(BLPF_250_3+threshold)));
-
-%original image
-figure(1);
-imshow(f);
+%crop the image
+devonvolution_GLPF_100 = devonvolution_GLPF_100_(1:M, 1:N);
+devonvolution_GLPF_150 = devonvolution_GLPF_150_(1:M, 1:N);
+devonvolution_GLPF_200 = devonvolution_GLPF_200_(1:M, 1:N);
+devonvolution_GLPF_250 = devonvolution_GLPF_250_(1:M, 1:N);
 
 %image histogram to determine the noise model
-figure(2);
+figure(1);
 [pixelCount, grayLevels] = imhist(f);
 bar(grayLevels, pixelCount);
-grid on;
 xlim([-1 grayLevels(end)+1]);
+title('Original image histgram',FontSize=24);
+grid on;
+img1 = getframe(gcf);
+imwrite(img1.cdata, 'result/Original image histgram.png');
 
-figure(3);
+figure(2);
 imshow(uint8(denoise_image));
+img2 = getframe(gcf);
+imwrite(img2.cdata, 'result/after_alpha_trim_filter_result.tiff', 'tiff', 'Resolution', 200);
 
-figure(4)
-subplot(2,4,1)
-imshow(uint8(real(devonvolution_GLPF_100)));
+figure(3)
+subplot(2,2,1)
+imshow(uint8(devonvolution_GLPF_100));
 
-subplot(2,4,2)
-imshow(uint8(real(devonvolution_GLPF_150)));
+subplot(2,2,2)
+imshow(uint8(devonvolution_GLPF_150));
 
-subplot(2,4,3)
-imshow(uint8(real(devonvolution_GLPF_200)));
+subplot(2,2,3)
+imshow(uint8(devonvolution_GLPF_200));
 
-subplot(2,4,4)
-imshow(uint8(real(devonvolution_GLPF_250)));
-
-subplot(2,4,5)
-imshow(uint8(real(devonvolution_BLPF_100)));
-
-subplot(2,4,6)
-imshow(uint8(real(devonvolution_BLPF_150)));
-
-subplot(2,4,7)
-imshow(uint8(real(devonvolution_BLPF_200)));
-
-subplot(2,4,8)
-imshow(uint8(real(devonvolution_BLPF_250)));
+subplot(2,2,4)
+imshow(uint8(devonvolution_GLPF_250));
