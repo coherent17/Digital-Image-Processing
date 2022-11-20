@@ -12,6 +12,7 @@ P_b = pixelCount(256) / sum(pixelCount);
 
 %alpha trim
 image_pad = padarray(f,[2,2], 'symmetric');
+denoise_image = zeros(M,N);
 for i = 3 : 802
     for j = 3 : 802
         value = [image_pad(i-2,j-2),image_pad(i-2,j-1),image_pad(i-2,j),image_pad(i-2,j+1),image_pad(i-2,j+2),...
@@ -21,18 +22,15 @@ for i = 3 : 802
                       image_pad(i+2,j-2),image_pad(i+2,j-1),image_pad(i+2,j),image_pad(i+2,j+1),image_pad(i+2,j+2)];
         value_sort = sort(value);
         mean_value = mean(value_sort(9:17));
-        image_pad(i,j) = mean_value;
+        denoise_image(i-2,j-2) = mean_value;
     end
 end
 
-denoise_image = zeros([M,N]);
-denoise_image(1:M,1:N) = image_pad(3:802,3:802);
-
 %Generate Gaussian LPF & Butterworth LPF:
 
-beta = 1;
-n = 5;
-ButterWorth_D0 = 200;
+beta = 0.4;
+n = 10;
+ButterWorth_D0 = 260;
 
 GLPF_100 = zeros(2*M,2*N);
 GLPF_150 = zeros(2*M,2*N);
@@ -53,11 +51,11 @@ for u = 1:2*M
 end
 
 %image pass inverse filter
-eps = 1e-6;
-devonvolution_GLPF_100_ = real(ifft2(ifftshift(fftshift(fft2(denoise_image, 2*M, 2*N)).*BLPF./(GLPF_100+eps))));
-devonvolution_GLPF_150_ = real(ifft2(ifftshift(fftshift(fft2(denoise_image, 2*M, 2*N)).*BLPF./(GLPF_150+eps))));
-devonvolution_GLPF_200_ = real(ifft2(ifftshift(fftshift(fft2(denoise_image, 2*M, 2*N)).*BLPF./(GLPF_200+eps))));
-devonvolution_GLPF_250_ = real(ifft2(ifftshift(fftshift(fft2(denoise_image, 2*M, 2*N)).*BLPF./(GLPF_250+eps))));
+eps = 1e-7;
+devonvolution_GLPF_100_ = real(ifft2(ifftshift(fftshift(fft2(denoise_image, 2*M, 2*N)).*(BLPF./(GLPF_100+eps)))));
+devonvolution_GLPF_150_ = real(ifft2(ifftshift(fftshift(fft2(denoise_image, 2*M, 2*N)).*(BLPF./(GLPF_150+eps)))));
+devonvolution_GLPF_200_ = real(ifft2(ifftshift(fftshift(fft2(denoise_image, 2*M, 2*N)).*(BLPF./(GLPF_200+eps)))));
+devonvolution_GLPF_250_ = real(ifft2(ifftshift(fftshift(fft2(denoise_image, 2*M, 2*N)).*(BLPF./(GLPF_250+eps)))));
 
 %crop the image
 devonvolution_GLPF_100 = devonvolution_GLPF_100_(1:M, 1:N);
@@ -69,7 +67,7 @@ devonvolution_GLPF_250 = devonvolution_GLPF_250_(1:M, 1:N);
 figure(1);
 [pixelCount, grayLevels] = imhist(f);
 bar(grayLevels, pixelCount);
-xlim([-1 grayLevels(end)+1]);
+xlim([-5 grayLevels(end)+5]);
 title('Original image histgram',FontSize=24);
 grid on;
 img1 = getframe(gcf);
@@ -77,25 +75,25 @@ imwrite(img1.cdata, 'result/Original image histgram.png');
 
 figure(2);
 imshow(uint8(denoise_image));
-img2 = getframe(gcf);
-imwrite(img2.cdata, 'result/after_alpha_trim_filter_result.tiff', 'tiff', 'Resolution', 200);
+img2 = getimage(gcf);
+imwrite(img2, 'result/after_alpha_trim_filter_result.tiff', 'tiff', 'Resolution', 200);
 
 figure(3)
 imshow(uint8(devonvolution_GLPF_100));
-img3 = getframe(gcf);
-imwrite(img3.cdata, 'result/devonvolution_GLPF_100.tiff', 'tiff', 'Resolution', 200);
+img3 = getimage(gcf);
+imwrite(img3, 'result/devonvolution_GLPF_100.tiff', 'tiff', 'Resolution', 200);
 
 figure(4)
 imshow(uint8(devonvolution_GLPF_150));
-img4 = getframe(gcf);
-imwrite(img4.cdata, 'result/devonvolution_GLPF_150.tiff', 'tiff', 'Resolution', 200);
+img4 = getimage(gcf);
+imwrite(img4, 'result/devonvolution_GLPF_150.tiff', 'tiff', 'Resolution', 200);
 
 figure(5)
 imshow(uint8(devonvolution_GLPF_200));
-img5 = getframe(gcf);
-imwrite(img5.cdata, 'result/devonvolution_GLPF_200.tiff', 'tiff', 'Resolution', 200);
+img5 = getimage(gcf);
+imwrite(img5, 'result/devonvolution_GLPF_200.tiff', 'tiff', 'Resolution', 200);
 
 figure(6)
 imshow(uint8(devonvolution_GLPF_250));
-img6 = getframe(gcf);
-imwrite(img6.cdata, 'result/devonvolution_GLPF_250.tiff', 'tiff', 'Resolution', 200);
+img6 = getimage(gcf);
+imwrite(img6, 'result/devonvolution_GLPF_250.tiff', 'tiff', 'Resolution', 200);
