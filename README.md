@@ -1,8 +1,28 @@
-# DIP midterm preparation
+# DIP 
 
 [TOC]
 
-## In-class QA for September 12
+## Project
+
+### Project1 : Image Enhancement In Spatial Domain
+https://github.com/coherent17/Digital-Image-Processing/tree/main/Project1
+
+### Project2 : Image Enhancement In Frequency Domain
+https://github.com/coherent17/Digital-Image-Processing/tree/main/Project2
+
+### Project3 : Alpha-Trimmed Filter & Inverse Filtering
+https://github.com/coherent17/Digital-Image-Processing/tree/main/Project3
+
+### Project4 : Color-Image Sharpening
+https://github.com/coherent17/Digital-Image-Processing/tree/main/Project4
+
+### Project5 : Canny Edge Detection
+https://github.com/coherent17/Digital-Image-Processing/tree/main/Project5
+
+
+## In Class Question:
+
+### In-class QA for September 12
 
 :::spoiler {state="open"}Describe the function, f(x, y), for an image.
 :::info
@@ -19,7 +39,7 @@ f(x, y), the intensity of the image.
 Reduce noise and improve image quality.
 :::
 
-## In-class QA for September 19
+### In-class QA for September 19
 
 :::spoiler {state="open"}i(x, y)=0, what does it mean?
 :::info
@@ -46,7 +66,7 @@ The reflectance of the entire object is the same; only one gray tone with intens
 ![](https://i.imgur.com/1ZdaVXH.png)
 :::
 
-## In-class QA for September 26
+### In-class QA for September 26
 
 :::spoiler {state="open"}Give one example of applications of image subtraction widely used in medical imageing.
 :::info
@@ -87,7 +107,7 @@ f: negative
 :::
 
 
-## In-class QA for October 3
+### In-class QA for October 3
 
 :::spoiler {state="open"}Describe the limitation of histogram equalization.
 :::info
@@ -116,7 +136,7 @@ We don't want to make any change on the subimage with almost constant intensity.
 ![](https://i.imgur.com/tfK9WWZ.png)
 :::
 
-## In-class QA for October 17
+### In-class QA for October 17
 
 :::spoiler {state="open"}Describe the pro and cons of using a large box kernel (eg, 21x21).
 :::info
@@ -150,7 +170,7 @@ M=9
 In mask design, isotropic indicates "rotation-invariant"; that is, when applying an isotropic mask to a rotated image, the result will be the same as which rotating (at the same angle) tha isotropic-mask processed image.
 :::
 
-## In-class QA for October 24
+### In-class QA for October 24
 
 :::spoiler {state="open"}What is the highest frequency (in Hz) that can be expressed by a discrete time series sampled at fs Hz sampling rate?
 :::info
@@ -169,7 +189,7 @@ x0 = 3, y0 = 4
 :::
 
 
-## In-class QA for October 31
+### In-class QA for October 31
 
 :::spoiler {state="open"}Why do we use 2Mx2N DFT for an MxN image when implementing filter in frequency domain?
 :::info
@@ -199,7 +219,7 @@ Increasing order n reduces the width of transition band. As n approched infinity
 :::
 
 
-## In-class QA for November 7
+### In-class QA for November 7
 
 :::spoiler {state="open"}What is important scheme in Homomorphic filtering that enables us to treat illumination and reflectance factors separately?
 :::info
@@ -228,7 +248,7 @@ Salt noise.
 :::
 
 
-## In-class QA for November 14
+### In-class QA for November 14
 
 :::spoiler {state="open"}What problem will occur if the median filter is applied too many times to an image with salt-and-pepper noise?
 :::info
@@ -249,4 +269,69 @@ The inverse filter has a large magnitude response in high-frequency region that 
 :::spoiler {state="open"}Describe the initial criterion used by developing the Weiner filter.
 :::info
 Minimization of expectation of square absolute error between actual and estimated noise-free image.
+:::
+
+### In-class QA for December 5
+:::spoiler {state="open"}![](https://i.imgur.com/xaGrpwE.png)
+
+:::info
+1. (Fig B, Fig C, Fig D) = (G, B, R)
+2. Saturation (S)
+3. Complement
+:::
+
+## Final Midterm
+
+### Q1
+:::spoiler {state="open"}
+![](https://i.imgur.com/WI7u4Yz.png)
+:::info
+![](https://i.imgur.com/2qVZD9M.png)
+![](https://i.imgur.com/vwWeQE3.png)
+
+:::
+
+### Q2
+:::spoiler {state="open"}
+![](https://i.imgur.com/xiX2GDu.png)
+:::info
+![](https://i.imgur.com/DyTJAjt.png)
+:::
+
+### Q3
+:::spoiler {state="open"}
+![](https://i.imgur.com/rgkICfo.png)
+:::info
+![](https://i.imgur.com/9ar5ha1.png)
+:::
+
+
+### Q4
+:::spoiler {state="open"}
+![](https://i.imgur.com/AUsV8gQ.png)
+:::info
+![](https://i.imgur.com/OhQJ7H8.png)
+:::
+
+
+### Q5
+:::spoiler {state="open"}
+![](https://i.imgur.com/At77N4C.png)
+:::info
+![](https://i.imgur.com/UkNEPam.png)
+![](https://i.imgur.com/HbL7Wcp.png)
+:::
+
+### Q6
+:::spoiler {state="open"}
+![](https://i.imgur.com/qbYdJSr.png)
+:::info
+![](https://i.imgur.com/8DMwOBT.png)
+:::
+
+### Q7
+:::spoiler {state="open"}
+![](https://i.imgur.com/D1nRnk0.png)
+:::info
+![](https://i.imgur.com/teGoaju.png)
 :::
